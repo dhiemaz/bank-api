@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  api:
+    image: dhiemaz/bank-api:0.1
+    secrets:
+      - gobank_database_url
+      - gobank_symmetric_key
+    environment:
+      - DATABASE_URL_FILE=/run/secrets/bank-api_database_url
+      - SYMMETRIC_KEY_FILE=/run/secrets/bank-api_symmetric_key
+      - MIGRATION_DIRECTORY=file:///migration
+      - DATABASE_DRIVER=postgres
+    ports:
+      - "9001:8000"
+    extra_hosts:
+          - "host.docker.internal:host-gateway"
+
+  gapi:
+    image: dhiemaz/bank-api-gapi:0.1
+    secrets:
+      - bank-api_database_url
+      - bank-api_symmetric_key
+    environment:
+      - DATABASE_URL_FILE=/run/secrets/bank-api_database_url
+      - SYMMETRIC_KEY_FILE=/run/secrets/bank-api_symmetric_key
+      - MIGRATION_DIRECTORY=file:///migration
+      - DATABASE_DRIVER=postgres
+    ports:
+      - "9002:8000"
+    extra_hosts:
+          - "host.docker.internal:host-gateway"
+
+  gateway:
+    image: dhiemaz/bank-api-gateway:0.2
+    secrets:
+      - gobank_database_url
+      - gobank_symmetric_key
+    environment:
+      - DATABASE_URL_FILE=/run/secrets/bank-api_database_url
+      - SYMMETRIC_KEY_FILE=/run/secrets/bank-api_symmetric_key
+      - MIGRATION_DIRECTORY=file:///migration
+      - DATABASE_DRIVER=postgres
+      - SWAGGER_DIRECTORY=/docs/swagger
+    ports:
+      - "9003:8000"
+    extra_hosts:
+          - "host.docker.internal:host-gateway"
+
+secrets:
+  bank-api_database_url:
+    external: true
+  bank-api_symmetric_key:
+    external: true

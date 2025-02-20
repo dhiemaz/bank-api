@@ -1,0 +1,9 @@
+symmetric_key: YiWe+pdmReUPUFX9B/TJkaeFRzx9t9sUpBlul4RD4sQ=
+database:
+  migration_path: /db/migration
+  url: postgres://postgres:postgres@localhost:5432/gobank?sslmode=disable
+  driver: postgres
+  user: postgres
+  password: ""  # Empty password
+  name: gobank
+env: development

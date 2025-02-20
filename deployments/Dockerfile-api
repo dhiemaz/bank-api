@@ -1,0 +1,17 @@
+FROM golang:1.19 AS development
+WORKDIR /go/src/github.com/dhiemaz/bank-api
+COPY go.mod go.sum ./
+RUN go mod download
+RUN go install github.com/cespare/reflex@latest
+CMD reflex -r '\.go$' -s -- sh -c 'go run main.go rest'
+
+FROM golang:alpine AS build
+WORKDIR /go/src/github.com/dhiemaz/bank-api
+COPY go.mod go.sum ./
+RUN go build -o /go/bin/bank-api main.go
+
+FROM alpine:3.7 AS production
+COPY --from=build /go/bin/bank-api /go/bin/bank-api
+COPY --from=build /migration /migration
+EXPOSE 8000
+CMD ["/go/bin/bank-api rest"]

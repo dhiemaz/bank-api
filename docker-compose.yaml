@@ -1,0 +1,79 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: "bank-api_db"
+    image: postgres:12.8
+    restart: always
+    env_file:
+      - ./.db.env
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    container_name: "bank-api_rest"
+    build:
+      dockerfile: deployments/Dockerfile-api
+      target: development
+    restart: always
+    volumes:
+      - .:/go/src/github.com/dhiemaz/bank-api
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_DRIVER=${DATABASE_DRIVER}
+      - DATABASE_MIGRATION_PATH=${DATABASE_MIGRATION_PATH}
+      - SYMMETRIC_KEY=${SYMMETRIC_KEY}
+      - ENV=${ENV}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  grpc:
+    container_name: "bank-api_gapi"
+    build:
+      dockerfile: deployments/Dockerfile-gapi
+      target: development
+    restart: always
+    volumes:
+      - .:/go/src/github.com/dhiemaz/bank-api
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_DRIVER=${DATABASE_DRIVER}
+      - DATABASE_MIGRATION_PATH=${DATABASE_MIGRATION_PATH}
+      - SYMMETRIC_KEY=${SYMMETRIC_KEY}
+    ports:
+      - "8001:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  gateway:
+    container_name: "bank-api_gateway"
+    build:
+      dockerfile: deployments/Dockerfile-gateway
+      target: development
+    restart: always
+    volumes:
+      - .:/go/src/github.com/dhiemaz/bank-api
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_DRIVER=${DATABASE_DRIVER}
+      - DATABASE_MIGRATION_PATH=${DATABASE_MIGRATION_PATH}
+      - SYMMETRIC_KEY=${SYMMETRIC_KEY}
+    ports:
+      - "8002:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db:
