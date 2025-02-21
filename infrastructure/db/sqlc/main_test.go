@@ -2,13 +2,13 @@ package db
 
 import (
 	"database/sql"
+	"github.com/dhiemaz/bank-api/config"
 	"log"
 	"math/rand"
 	"os"
 	"testing"
 	"time"
-
-	"github.com/escalopa/gobank/util"
+	
 	_ "github.com/lib/pq"
 )
 
@@ -22,13 +22,13 @@ func init() {
 func TestMain(m *testing.M) {
 	var err error
 	// Load config
-	config := util.NewConfig()
+	config := config.GetConfig()
 	if err != nil {
 		log.Fatal("cannot load configuration for testing", err)
 	}
 
 	// Connect to db
-	testDB, err = sql.Open(config.Get("DATABASE_DRIVER"), config.Get("DATABASE_URL"))
+	testDB, err = sql.Open(config.Database.Driver, config.Database.URL)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}

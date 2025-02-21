@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/dhiemaz/bank-api/infrastructure/logger"
 	"github.com/spf13/viper"
 	"log"
 	"sync"
@@ -54,4 +55,16 @@ func GetConfig() *Config {
 		}
 	})
 	return cfg
+}
+
+func InitLogger() {
+	logConfig := logger.Configuration{
+		EnableConsole:     true,    // next, get from configuration
+		ConsoleJSONFormat: true,    // next, get from configuration
+		ConsoleLevel:      "debug", // next, get from configuration
+	}
+
+	if err := logger.NewLogger(logConfig, logger.InstanceZapLogger); err != nil {
+		log.Fatalf("Could not instantiate log %v", err)
+	}
 }

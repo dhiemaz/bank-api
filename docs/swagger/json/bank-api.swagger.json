@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Gobank project",
+    "title": "Bank API (Go)",
     "version": "1.0",
     "contact": {
       "name": "gRPC-Gateway project",
-      "url": "https://github.com/escalopa/gobank",
-      "email": "none@example.com"
+      "url": "https://github.com/dhiemaz/bank-api",
+      "email": "prawira.dimas.yudha@gmail.com"
     }
   },
   "tags": [

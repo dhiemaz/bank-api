@@ -11,8 +11,8 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "Ahmad Helaly",
-            "email": "ahmad.helaly.dev@gmail.com"
+            "name": "Dimas Yudha Prawira",
+            "email": "prawira.dimas.yudha@gmail.com"
         },
         "version": "{{.Version}}"
     },
@@ -1057,8 +1057,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Gobank API",
-	Description:      "Gobank is a SAAP that allows users to create accounts and transfer money between them.",
+	Title:            "Bank API (Go)",
+	Description:      "Bank API is a SAAP that allows users to create accounts and transfer money between them.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

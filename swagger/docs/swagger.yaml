@@ -178,11 +178,11 @@ definitions:
     type: object
 info:
   contact:
-    email: ahmad.helaly.dev@gmail.com
-    name: Ahmad Helaly
-  description: Gobank is a SAAP that allows users to create accounts and transfer
+    email: prawira.dimas.yudha@gmail.com
+    name: Dimas Yudha Prawira
+  description: Bank API is a SAAP that allows users to create accounts and transfer
     money between them.
-  title: Gobank API
+  title: Bank API
   version: "1.0"
 paths:
   /accounts:

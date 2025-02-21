@@ -1,11 +1,11 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Gobank is a SAAP that allows users to create accounts and transfer money between them.",
-        "title": "Gobank API",
+        "description": "Bank API is a SAAP that allows users to create accounts and transfer money between them.",
+        "title": "Bank API (Go)",
         "contact": {
-            "name": "Ahmad Helaly",
-            "email": "ahmad.helaly.dev@gmail.com"
+            "name": "Dimas Yudha Prawira",
+            "email": "prawira.dimas.yudha@gmail.com"
         },
         "version": "1.0"
     },

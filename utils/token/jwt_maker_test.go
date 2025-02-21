@@ -4,16 +4,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/escalopa/gobank/util"
+	"github.com/dhiemaz/bank-api/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/stretchr/testify/require"
 )
 
 func TestJWTMaker(t *testing.T) {
-	JWTMaker, err := NewJWTMaker(util.RandomString(32))
+	JWTMaker, err := NewJWTMaker(utils.RandomString(32))
 	require.NoError(t, err)
 
-	username := util.RandomOwner()
+	username := utils.RandomOwner()
 	issuedAt := time.Now()
 
 	token, payload, err := JWTMaker.CreateToken(username)
@@ -31,14 +31,14 @@ func TestJWTMaker(t *testing.T) {
 }
 
 func TestJWTMakerInvalid(t *testing.T) {
-	payload, err := NewPayload(util.RandomOwner(), time.Minute)
+	payload, err := NewPayload(utils.RandomOwner(), time.Minute)
 	require.NoError(t, err)
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodNone, payload)
 	token, err := jwtToken.SignedString(jwt.UnsafeAllowNoneSignatureType)
 	require.NoError(t, err)
 
-	JWTMaker, err := NewJWTMaker(util.RandomString(32))
+	JWTMaker, err := NewJWTMaker(utils.RandomString(32))
 	require.NoError(t, err)
 
 	payload, err = JWTMaker.VerifyToken(token)

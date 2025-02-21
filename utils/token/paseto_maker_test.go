@@ -4,15 +4,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/escalopa/gobank/util"
+	"github.com/dhiemaz/bank-api/utils"
 	"github.com/stretchr/testify/require"
 )
 
 func TestPasetoMaker(t *testing.T) {
-	pasetoMaker, err := NewPasetoMaker(util.RandomString(32))
+	pasetoMaker, err := NewPasetoMaker(utils.RandomString(32))
 	require.NoError(t, err)
 
-	username := util.RandomOwner()
+	username := utils.RandomOwner()
 	issuedAt := time.Now()
 
 	token, payload, err := pasetoMaker.CreateToken(username)

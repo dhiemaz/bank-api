@@ -1,16 +1,17 @@
 package handlers
 
 import (
+	"fmt"
+	"github.com/dhiemaz/bank-api/config"
 	"github.com/dhiemaz/bank-api/infrastructure"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
-	mockdb "github.com/escalopa/gobank/db/mock"
-	db "github.com/escalopa/gobank/db/sqlc"
-	"github.com/escalopa/gobank/token"
-	"github.com/escalopa/gobank/util"
+	mockdb "github.com/dhiemaz/bank-api/infrastructure/db/mock"
+	"github.com/dhiemaz/bank-api/infrastructure/db/sqlc"
+	"github.com/dhiemaz/bank-api/utils/token"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -51,16 +52,26 @@ func runServerTest(t *testing.T, tc testCase, req *http.Request) {
 	server := newTestServer(t, store)
 	recorder := httptest.NewRecorder()
 
-	tc.setupAuthMethod(t, req, server.tm)
-	server.router.ServeHTTP(recorder, req)
+	cfg := config.GetConfig()
+
+	maker, err := token.NewPasetoMaker(cfg.SymmetricKey)
+	if err != nil {
+		panic(err)
+	}
+
+	port := "8080"
+	tc.setupAuthMethod(t, req, maker)
+	err = server.Start(fmt.Sprintf("0.0.0.0:%s", port))
+	if err != nil {
+		return
+	}
 	tc.checkResponseMethod(t, recorder)
 }
 
 func newTestServer(t *testing.T, store db.Store) *infrastructure.GinServer {
-	testConfig := util.NewConfig()
-	testConfig.Set("SYMMETRIC_KEY", "12345678901234567890123456789012")
+	testConfig := config.GetConfig()
 
-	server, err := infrastructure.NewServer(testConfig, store)
+	server, err := infrastructure.NewServer(testConfig, store, nil)
 	require.NoError(t, err)
 	return server
 }

@@ -3,8 +3,8 @@ package middlewares
 import (
 	"errors"
 	"fmt"
-	"github.com/dhiemaz/bank-api/common/token"
 	"github.com/dhiemaz/bank-api/entities"
+	"github.com/dhiemaz/bank-api/utils/token"
 	"net/http"
 	"strings"
 

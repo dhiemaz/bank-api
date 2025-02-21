@@ -3,8 +3,8 @@ package gapi
 import (
 	"context"
 	"database/sql"
-	"github.com/dhiemaz/bank-api/common"
 	"github.com/dhiemaz/bank-api/infrastructure/db/sqlc"
+	"github.com/dhiemaz/bank-api/utils"
 	"strings"
 
 	"github.com/dhiemaz/bank-api/grpc/pb"

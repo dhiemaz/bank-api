@@ -3,7 +3,7 @@ package gapi
 import (
 	"context"
 	"fmt"
-	"github.com/dhiemaz/bank-api/common/token"
+	"github.com/dhiemaz/bank-api/utils/token"
 	"strings"
 
 	"google.golang.org/grpc/codes"

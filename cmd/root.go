@@ -5,6 +5,7 @@ import (
 	"github.com/dhiemaz/bank-api/cmd/gapi"
 	"github.com/dhiemaz/bank-api/cmd/gateway"
 	"github.com/dhiemaz/bank-api/cmd/rest"
+	"github.com/dhiemaz/bank-api/config"
 	"github.com/dhiemaz/bank-api/infrastructure/logger"
 	"github.com/spf13/cobra"
 )
@@ -38,12 +39,12 @@ func (c *Command) Run() {
 			PreRun: func(cmd *cobra.Command, args []string) {
 				// Show display text
 				fmt.Println(fmt.Sprintf(text))
-
-				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP rest API"}).
-					Infof("PreRun command done")
+				config.InitLogger()
 			},
 			Run: func(cmd *cobra.Command, args []string) {
 				rest.Run()
+				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP rest API"}).
+					Infof("PreRun command done")
 			},
 			PostRun: func(cmd *cobra.Command, args []string) {
 				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP rest API"}).
@@ -57,12 +58,12 @@ func (c *Command) Run() {
 			PreRun: func(cmd *cobra.Command, args []string) {
 				// Show display text
 				fmt.Println(fmt.Sprintf(text))
-
-				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP gRPC"}).
-					Infof("PreRun command done")
+				config.InitLogger()
 			},
 			Run: func(cmd *cobra.Command, args []string) {
 				gapi.RunGRPCAPIServer()
+				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP gRPC"}).
+					Infof("PreRun command done")
 			},
 			PostRun: func(cmd *cobra.Command, args []string) {
 				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP gRPC"}).
@@ -76,12 +77,12 @@ func (c *Command) Run() {
 			PreRun: func(cmd *cobra.Command, args []string) {
 				// Show display text
 				fmt.Println(fmt.Sprintf(text))
-
-				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP gRPC Gateway"}).
-					Infof("PreRun command done")
+				config.InitLogger()
 			},
 			Run: func(cmd *cobra.Command, args []string) {
 				gateway.RunGateway()
+				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP gRPC Gateway"}).
+					Infof("PreRun command done")
 			},
 			PostRun: func(cmd *cobra.Command, args []string) {
 				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP gRPC Gateway"}).

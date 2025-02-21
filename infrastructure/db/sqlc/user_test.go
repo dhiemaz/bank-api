@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/escalopa/gobank/util"
+	"github.com/dhiemaz/bank-api/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,14 +19,14 @@ func validateUserBasic(t *testing.T, user User) {
 }
 
 func createRandomUser(t *testing.T) User {
-	hashPassword, err := util.GenerateHashPassword(util.RandomString(10))
+	hashPassword, err := utils.GenerateHashPassword(utils.RandomString(10))
 	require.NoError(t, err)
 
 	user1 := CreateUserParams{
-		Username:       util.RandomOwner(),
+		Username:       utils.RandomOwner(),
 		HashedPassword: hashPassword,
-		FullName:       util.RandomOwner(),
-		Email:          util.RandomEmail(),
+		FullName:       utils.RandomOwner(),
+		Email:          utils.RandomEmail(),
 	}
 
 	user2, err := testQueries.CreateUser(context.Background(), user1)
