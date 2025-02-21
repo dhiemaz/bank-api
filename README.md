@@ -47,6 +47,77 @@ $podman run -p 8000:8000 bank-api:latest
 
 ```
 
+* Running natively
+
+- Run app
+
+you can run app directly without build as docker or podman image, but to do that you need to have Go SDK installe in 
+your machine. Please refer to [download and install instruction](https://go.dev/doc/install) to install Go into your machine.
+
+If you have installed Go SDK into your machine, to run follow below step
+
+- Run as REST API
+
+```shell
+
+$go run main.go rest
+
+```
+
+- Run as gRPC API
+
+```shell
+
+$go run main.go gapi
+
+```
+
+- Build app
+
+As Go is compiled programming language so we can choose either run directly or compile the app. The pros for compile the app
+is that after compile, you can deliver or run compiled app without need to have Go SDK in your machine.
+
+```shell
+$go build -o bank-api main.go
+
+```
+
+and after build success, we can execute the app using command
+
+```shell
+
+$./bank-api rest
+
+```
+
+you can see complete command here 
+
+```shell
+
+$go run main.go
+
+```
+
+result 
+
+```shell
+Bank API made with Go
+
+Usage:
+  BANK [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  gapi        Run Banking API HTTP server (gRPC)
+  gateway     Run Banking API HTTP server (gRPC Gateway)
+  help        Help about any command
+  migrate     Run Banking API migration
+  rest        Run Banking API HTTP server (rest-API)
+
+```
+
+
+
 _Note : if you want to change application configuration, open `config.yaml` file and change the value match with your system._ 
 
 
