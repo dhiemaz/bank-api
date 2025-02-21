@@ -131,7 +131,7 @@ The applicatoin uses `paseto` for authentication.
 - Create a user
 - Login
 - Renew access token
-- Upadte user
+- Update user
 
 ### Account
 - Create an account
