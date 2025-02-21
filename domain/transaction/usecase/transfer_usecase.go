@@ -5,6 +5,7 @@ import (
 	"github.com/dhiemaz/bank-api/domain/account/usecase"
 	"github.com/dhiemaz/bank-api/entities"
 	"github.com/dhiemaz/bank-api/infrastructure/db/sqlc"
+	"github.com/dhiemaz/bank-api/infrastructure/logger"
 	"github.com/dhiemaz/bank-api/middlewares"
 	"github.com/dhiemaz/bank-api/utils"
 	"github.com/dhiemaz/bank-api/utils/api_error"
@@ -35,27 +36,49 @@ func (transfer *UseCase) ValidateTransfer(ctx *gin.Context, fromAccount, toAccou
 
 	from, err = transfer.account.IsValidAccount(ctx, fromAccount)
 	if err != nil {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "validate transfer", "from_account": fromAccount, "to_account": toAccount}).
+			Errorf("failed validate from_account [%d], error : %v", fromAccount, err)
+
 		return nil, nil, err
 	}
 
 	to, err = transfer.account.IsValidAccount(ctx, toAccount)
 	if err != nil {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "validate transfer", "from_account": fromAccount, "to_account": toAccount}).
+			Errorf("failed validate to_account [%d], error : %v", toAccount, err)
+
 		return nil, nil, err
 	}
 
 	if !isUserAccountOwner(ctx, from) {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "validate transfer", "from_account": fromAccount, "to_account": toAccount}).
+			Errorf("from_account [%d] is not user account owner")
+
 		return nil, nil, api_error.ErrNotAccountOwner
 	}
 
-	if from.Currency == to.Currency {
+	if from.Currency != to.Currency {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "validate transfer", "from_account": fromAccount, "to_account": toAccount}).
+			Errorf("currency must be the same")
+
 		return nil, nil, api_error.ErrCurrencyMismatch(from.Currency, to.Currency)
 	}
 
-	if from.IsDeleted {
+	if to.IsDeleted {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "validate transfer", "from_account": fromAccount, "to_account": toAccount}).
+			Errorf("failed to_account [%d] is deleted", toAccount)
+
 		return nil, nil, api_error.ErrAccountDeleted(from.ID)
 	}
 
 	if from.IsDeleted {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "validate transfer", "from_account": fromAccount, "to_account": toAccount}).
+			Errorf("failed from_account [%d] is deleted", fromAccount)
+
 		return nil, nil, api_error.ErrAccountDeleted(to.ID)
 	}
 
@@ -71,6 +94,9 @@ func (transfer *UseCase) CreateTransfer(ctx *gin.Context, request entities.Creat
 
 	result, err := transfer.db.TransferTx(ctx, arg)
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "create transfer", "payload": request}).
+			Errorf("failed create transfer, err : %v", err)
+
 		return nil, err
 	}
 
@@ -80,11 +106,17 @@ func (transfer *UseCase) CreateTransfer(ctx *gin.Context, request entities.Creat
 func (transfer *UseCase) GetListTransfer(ctx *gin.Context, request entities.GetTransferRequest, pagination *utils.PaginationQuery) ([]db.Transfer, error) {
 	account, err := transfer.account.IsValidAccount(ctx, request.AccountID)
 	if err != nil {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "get transfer list data", "payload": request}).
+			Errorf("failed get transfer list, err : %v", err)
+
 		return nil, errors.New("invalid account id")
 	}
 
 	if !isUserAccountOwner(ctx, account) {
-		//ctx.JSON(http.StatusUnauthorized, entities.Err(common.ErrNotAccountOwner))
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "get transfer list data", "payload": request}).
+			Errorf("failed get transfer list, account doesn't belong to authenticated user")
+
 		return nil, api_error.ErrNotAccountOwner
 	}
 
@@ -93,6 +125,9 @@ func (transfer *UseCase) GetListTransfer(ctx *gin.Context, request entities.GetT
 	})
 
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "get transfer list data", "payload": request}).
+			Errorf("failed get transfer list, err : %v", err)
+
 		return nil, err
 	}
 

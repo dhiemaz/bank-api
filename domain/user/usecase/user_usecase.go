@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/dhiemaz/bank-api/entities"
 	db "github.com/dhiemaz/bank-api/infrastructure/db/sqlc"
+	"github.com/dhiemaz/bank-api/infrastructure/logger"
 	"github.com/dhiemaz/bank-api/utils"
 	"github.com/dhiemaz/bank-api/utils/api_error"
 	"github.com/dhiemaz/bank-api/utils/token"
@@ -34,24 +35,39 @@ func NewUserUseCase(db db.Querier) *UseCase {
 func (user *UseCase) Login(ctx *gin.Context, request entities.LoginUserRequest) (*entities.LoginUserResponse, error) {
 	userData, err := user.CheckUserExist(ctx, request.Username)
 	if err != nil {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "user login", "payload": request}).
+			Errorf("failed user login, err : %v", err)
+
 		return nil, err
 	}
 
 	// Check User's Password
 	err = utils.CheckHashedPassword(userData.HashedPassword, request.Password)
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "user login", "payload": request}).
+			Errorf("failed check hashed password login, err : %v", err)
+
 		return nil, err
 	}
 
 	// Generate New Access Token for User
 	accessToken, accessPayload, err := user.jwt.CreateToken(request.Username)
 	if err != nil {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "user login", "payload": request}).
+			Errorf("failed create token, err : %v", err)
+
 		return nil, err
 	}
 
 	// Generate New Refresh Token for User
 	refreshToken, refreshPayload, err := user.jwt.CreateRefreshToken(request.Username)
 	if err != nil {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "user login", "payload": request}).
+			Errorf("failed create refresh token, err : %v", err)
+
 		return nil, err
 	}
 
@@ -80,6 +96,9 @@ func (user *UseCase) Login(ctx *gin.Context, request entities.LoginUserRequest) 
 func (user *UseCase) UserRegistration(ctx *gin.Context, request entities.CreateUserRequest) (*db.User, error) {
 	hashPassword, err := utils.GenerateHashPassword(request.Password)
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "user registration", "payload": request}).
+			Errorf("failed register new user, err : %v", err)
+
 		return nil, err
 	}
 
@@ -91,6 +110,10 @@ func (user *UseCase) UserRegistration(ctx *gin.Context, request entities.CreateU
 	})
 
 	if err != nil {
+
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "user registration", "payload": request}).
+			Errorf("failed register new user, err : %v", err)
+
 		var pqErr *pq.Error
 		if errors.As(err, &pqErr) {
 			switch pqErr.Code.Name() {
@@ -108,6 +131,9 @@ func (user *UseCase) UserRegistration(ctx *gin.Context, request entities.CreateU
 func (user *UseCase) GetUser(ctx *gin.Context, username string) (*db.User, error) {
 	userData, err := user.CheckUserExist(ctx, username)
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "get user", "username": username}).
+			Errorf("failed get user, err : %v", err)
+
 		return nil, err
 	}
 
@@ -116,24 +142,35 @@ func (user *UseCase) GetUser(ctx *gin.Context, username string) (*db.User, error
 
 // UpdateUser : update existing user data
 func (user *UseCase) UpdateUser(ctx *gin.Context, username string, request entities.UpdateUserRequest) (*db.User, error) {
-
 	var params db.UpdateUserParams
 
 	userData, err := user.CheckUserExist(ctx, username)
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "update user", "username": username, "payload": request}).
+			Errorf("failed check if user exist, err : %v", err)
+
 		return nil, err
 	}
 
 	if request.Email == userData.Email {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "update user", "username": username, "payload": request}).
+			Errorf("failed update user due to email is same")
+
 		return nil, api_error.ErrEmailSameAsOld
 	}
 
 	if err := utils.CheckHashedPassword(request.OldPassword, userData.HashedPassword); err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "update user", "username": username, "payload": request}).
+			Errorf("failed update user due to password is not valid")
+
 		return nil, api_error.ErrPasswordWrong
 	}
 
 	hashedPassword, err := utils.GenerateHashPassword(request.NewPassword)
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "update user", "username": username, "payload": request}).
+			Errorf("failed generate hash password, err : %v", err)
+
 		return nil, err
 	}
 
@@ -141,16 +178,22 @@ func (user *UseCase) UpdateUser(ctx *gin.Context, username string, request entit
 
 	dbUser, err := user.db.UpdateUser(ctx, params)
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "update user", "username": username, "payload": request}).
+			Errorf("failed update user, err : %v", err)
+
 		return nil, err
 	}
 
-	return &dbUser, err
+	return &dbUser, nil
 }
 
 // CheckUserExist : check if user is exist in database
 func (user *UseCase) CheckUserExist(ctx *gin.Context, username string) (*db.User, error) {
 	userData, err := user.db.GetUser(ctx, username)
 	if err != nil {
+		logger.WithFields(logger.Fields{"component": "usecase", "action": "check user exist", "username": username}).
+			Errorf("failed check if user exist, err : %v", err)
+
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, err
 		}

@@ -1,9 +1,8 @@
-package handlers
+package infrastructure
 
 import (
 	"fmt"
 	"github.com/dhiemaz/bank-api/config"
-	"github.com/dhiemaz/bank-api/infrastructure"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -68,10 +67,10 @@ func runServerTest(t *testing.T, tc testCase, req *http.Request) {
 	tc.checkResponseMethod(t, recorder)
 }
 
-func newTestServer(t *testing.T, store db.Store) *infrastructure.GinServer {
+func newTestServer(t *testing.T, store db.Store) *GinServer {
 	testConfig := config.GetConfig()
 
-	server, err := infrastructure.NewServer(testConfig, store, nil)
+	server, err := NewServer(testConfig, store, nil)
 	require.NoError(t, err)
 	return server
 }
