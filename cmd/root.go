@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dhiemaz/bank-api/cmd/gapi"
 	"github.com/dhiemaz/bank-api/cmd/gateway"
+	"github.com/dhiemaz/bank-api/cmd/migration"
 	"github.com/dhiemaz/bank-api/cmd/rest"
 	"github.com/dhiemaz/bank-api/config"
 	"github.com/dhiemaz/bank-api/infrastructure/logger"
@@ -87,6 +88,26 @@ func (c *Command) Run() {
 			PostRun: func(cmd *cobra.Command, args []string) {
 				logger.WithFields(logger.Fields{"component": "command", "action": "serve HTTP gRPC Gateway"}).
 					Infof("PostRun command done")
+			},
+		},
+		{
+			Use:   "migrate",
+			Short: "Run Banking API migration",
+			Long:  "Run Banking API migration",
+			PreRun: func(cmd *cobra.Command, args []string) {
+				// Show display text
+				fmt.Println(fmt.Sprintf(text))
+				config.InitLogger()
+
+				logger.WithFields(logger.Fields{"component": "command", "action": "running database migration"}).
+					Infof("starting migration...")
+			},
+			Run: func(cmd *cobra.Command, args []string) {
+				migration.RunMigration()
+			},
+			PostRun: func(cmd *cobra.Command, args []string) {
+				logger.WithFields(logger.Fields{"component": "command", "action": "running database migration"}).
+					Infof("done migration...")
 			},
 		},
 	}
